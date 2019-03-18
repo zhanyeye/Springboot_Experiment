@@ -72,7 +72,7 @@
 
 
 
-？？？
+几个常用的注解
 
 ```
 @Repository 声明组件
@@ -83,3 +83,145 @@
 @RunWith(SpringRunner.class)  指定测试运行器
 @SpringBootTest    声明为springboot测试类，可启动测试用Springboot
 ```
+
+
+
+#### 实体对象状态实验  2019.03.18
+
+- void persist(Object entity)
+
+- - 将新建状态对象转为持久化状态
+
+  - 对象是持久化状态，该方法被忽略
+
+  - 对象是脱管状态，将抛出异常
+
+  - 对象是删除状态，将重新转为持久化状态
+
+    
+
+- Object find(Class entityClass, Object primaryKey)    //entityClass => 类.class
+
+- - 没有匹配记录，返回null
+
+  - 查询返回的结果是**受管对象**
+
+  - 加载顺序：
+
+    + 在持久化上下文中，查询相同类型相同主键受管对象 (看持久化上下文中是否存在)
+
+    + 数据库中查询
+
+      
+
+- 事务结束后，受管对象自动同步到数据库，无需调用特定方法
+
+  
+
+- void flush()
+
+- - 强制当前所有受管状态对象，**同步到数据库 （undo）**
+
+  - 强制执行SQL更新语句以同步
+
+  - 事务提交时自动执行此方法
+
+  - 事务提交时自动执行此方法
+
+    
+
++ void refresh(Object entity)
+  - 强制数据库数据，同步到**受管对象**(基于主键)
+  - 强制执行SQL查询语句以同步
+  - 对象是新建状态，抛出异常
+  - 对象是**受管状态**，同步受管对象
+  - 对象是**脱管状态**，抛出异常
+  - 对象是删除状态，抛出异常
+
+```java
+/**
+* 更新指定地址为指定用户 ----- 使用merge()方法实现更新
+* @param aid
+* @param uid
+* @return
+*/
+public Address updateAddress(int aid, int uid) {
+    Address address1 = new Address();
+    address1.setId(aid);   //有主键即判断为脱管对象
+    Address address2 =  em.merge(address1);  //基于脱管对象的主键，从数据库查询数据，并封装到受管新对象
+       										 //merge()方法将同步更新对象的全部属性!!!
+    em.refresh(address2);                    //从数据库更新数据至受管对象，覆盖空数据
+    User user = em.find(User.class, uid);    //根据uid查找用户
+    address2.setUser(user);                  //merge()返回的新对象为受管状态
+    return address2;
+}
+
+```
+
+
+
+- **Object** merge(Object entity)
+
+- - 对象为新建状态时，相当与执行persist()方法
+
+  - 对象为脱管状态时
+
+  - - 基于脱管对象中的**主键**，从数据库查询数据，并封装到**新对象**
+    - 将原脱管对象的修改合并至新对象
+    - 原脱管状态对象依然为脱管状态
+    - **返回的新对象为受管状态**
+
+  - 对象为受管状态时，忽略执行
+
+​      **并非将脱管状对象态变为受管状态:**将脱管对象的修改更新，但脱管对象依然为脱管状态，返回的**新对象**，为受管对象
+
+
+
+- void remove(Object entity)
+
+- - 对象是受管状态，将转为删除状态
+  - 对象是脱管状态，将抛出异常
+  - 对象是删除状态，将忽略
+  - 仍然持有被删除对象的引用
+  - persist()方法可将对象重置为受管状态
+
+
+
+- cascade：指定对级联对象执行的级联操作策略
+
+- - CascadeType.MERGE
+  - CascadeType.PERSIST
+  - CascadeType.REFRESH
+  - CascadeType.REMOVE
+  - CascadeType.ALL
+
+```java
+@OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+private List<Address> addresses;
+```
+
+
+
+- fetch：指定对关联实体对象的抓取/加载策略
+
+- - FetchType.EAGER：即时加载/抓取，对One端默认值
+  - FetchType.LAZY：延迟加载/抓取，对Many端默认值
+
+```java
+/**
+* 返回指定用户的全部地址，没有返回空集合，而非null
+* @param uid
+* @return
+*/
+public List<Address> listAddresses(int uid) {
+    User user = em.find(User.class, uid);
+    if (user != null) {
+        List<Address> addressList = new ArrayList<>();
+        user.getAddresses().forEach(a -> addressList.add(a));
+        return addressList;     //如果直接返回user.getAddresses() 会报延迟加载异常
+    }
+    log.debug("未找到指定用户，返回空集合！！！");
+    return List.of();
+}
+```
+

@@ -50,7 +50,6 @@ public class UserRepository {
      */
     public User updateUser(int uid, String newName) {
         User user = em.find(User.class, uid);    //查询，返回受管对象
-        em.refresh(user);            //从数据库更新数据到受管对象，覆盖null数据
         user.setName(newName);
         return user;
     }
