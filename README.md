@@ -90,11 +90,11 @@
 
 - void persist(Object entity)
 
-- - 将新建状态对象转为持久化状态
+  - 将新建状态对象转为持久化状态
 
   - 对象是持久化状态，该方法被忽略
 
-  - 对象是脱管状态，将抛出异常
+  - 对象是脱管状态，将抛出异常 (**有主键即判断为脱管对象**)
 
   - 对象是删除状态，将重新转为持久化状态
 
@@ -102,7 +102,7 @@
 
 - Object find(Class entityClass, Object primaryKey)    //entityClass => 类.class
 
-- - 没有匹配记录，返回null
+  - 没有匹配记录，返回null
 
   - 查询返回的结果是**受管对象**
 
@@ -120,7 +120,7 @@
 
 - void flush()
 
-- - 强制当前所有受管状态对象，**同步到数据库 （undo）**
+  - 强制当前所有受管状态对象，**同步到数据库 （undo）**
 
   - 强制执行SQL更新语句以同步
 
@@ -135,7 +135,7 @@
   - 强制执行SQL查询语句以同步
   - 对象是新建状态，抛出异常
   - 对象是**受管状态**，同步受管对象
-  - 对象是**脱管状态**，抛出异常
+  - 对象是**脱管状态**，**抛出异常**
   - 对象是删除状态，抛出异常
 
 ```java
@@ -148,8 +148,7 @@
 public Address updateAddress(int aid, int uid) {
     Address address1 = new Address();
     address1.setId(aid);   //有主键即判断为脱管对象
-    Address address2 =  em.merge(address1);  //基于脱管对象的主键，从数据库查询数据，并封装到受管新对象
-       										 //merge()方法将同步更新对象的全部属性!!!
+    Address address2 =  em.merge(address1);  //基于脱管对象的主键，从数据库查询数据，并封装到受管新对象,merge()方法将同步更新对象的全部属性!!!
     em.refresh(address2);                    //从数据库更新数据至受管对象，覆盖空数据
     User user = em.find(User.class, uid);    //根据uid查找用户
     address2.setUser(user);                  //merge()返回的新对象为受管状态
@@ -162,11 +161,11 @@ public Address updateAddress(int aid, int uid) {
 
 - **Object** merge(Object entity)
 
-- - 对象为新建状态时，相当与执行persist()方法
+  - 对象为新建状态时，相当与执行persist()方法
 
   - 对象为脱管状态时
 
-  - - 基于脱管对象中的**主键**，从数据库查询数据，并封装到**新对象**
+    - 基于脱管对象中的**主键**，从数据库查询数据，并封装到**新对象**
     - 将原脱管对象的修改合并至新对象
     - 原脱管状态对象依然为脱管状态
     - **返回的新对象为受管状态**
@@ -179,7 +178,7 @@ public Address updateAddress(int aid, int uid) {
 
 - void remove(Object entity)
 
-- - 对象是受管状态，将转为删除状态
+  - 对象是受管状态，将转为删除状态
   - 对象是脱管状态，将抛出异常
   - 对象是删除状态，将忽略
   - 仍然持有被删除对象的引用
@@ -189,7 +188,7 @@ public Address updateAddress(int aid, int uid) {
 
 - cascade：指定对级联对象执行的级联操作策略
 
-- - CascadeType.MERGE
+  - CascadeType.MERGE
   - CascadeType.PERSIST
   - CascadeType.REFRESH
   - CascadeType.REMOVE
@@ -204,7 +203,7 @@ private List<Address> addresses;
 
 - fetch：指定对关联实体对象的抓取/加载策略
 
-- - FetchType.EAGER：即时加载/抓取，对One端默认值
+  - FetchType.EAGER：即时加载/抓取，对One端默认值
   - FetchType.LAZY：延迟加载/抓取，对Many端默认值
 
 ```java
