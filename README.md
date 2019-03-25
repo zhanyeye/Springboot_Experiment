@@ -1,8 +1,12 @@
 ## Springboot-experiment
 
+[TOC]
+
+
+
 #### JPA实例  2019.03.11
 
-###### JPA基本映射声明方法：
+**JPA基本映射声明方法：**
 
 @Entity
 
@@ -12,7 +16,7 @@
 
 - Name：对应关系型数据库的数据表名，默认为实体类名，**当希望实体类名称与数据表名称不同，或名称与数据库关键字冲突时使用**
 
-###### 基本属性的映射声明：
+**基本属性的映射声明：**
 
 - @Id：(javax.persistence.Id)修饰属性变量声明为主键，也可修饰主键的getter方法。
 - @GeneratedValue的strategy字段声明主键生成策略
@@ -33,7 +37,7 @@
 
 
 
-###### 实体对象关联对象的实现方法，映射声明
+**实体对象关联对象的实现方法，映射声明**
 
 - mappedBy出现在哪，哪端放弃维护
 - 在many段维护关系，one端有一个集合？？？
@@ -224,3 +228,34 @@ public List<Address> listAddresses(int uid) {
 }
 ```
 
+
+
+####  JPQL查询语言实验
+
+\* org.springframework.data.repository.Interface CrudRepository<T,ID>，基本的ORM框架通用的支持CRUD的接口
+
+\* org.springframework.data.jpa.repository.Interface JpaRepository<T,ID>，继承以上接口的具体JPA接口
+
+\* JpaRepository接口，封装了改变实体对象状态的JPA方法，简化了基于实体对象的CRUD操作(无需关心实体对象状态)
+
+\* 为每一个实体类创建继承了JpaRepository的接口
+
+\* Spring-data-jpa基于JDK动态代理，自动创建接口实现类完成操作，无需手动编写接口实现类(类似myBatis)
+
+
+
+JPQL
+
++ Querying Parameter
+
+  + 根据参数位置设置参数 ?position
+
+  ![1553514628398](assets/1553514628398.png)
+
+  
+
+  + 根据参数名称设置参数 :name
+
+  ![1553514697497](assets/1553514697497.png)
+
+  
