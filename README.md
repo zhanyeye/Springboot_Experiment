@@ -2,6 +2,8 @@
 
 [TOC]
 
+------
+
 
 
 #### JPA实例  2019.03.11
@@ -232,16 +234,6 @@ public List<Address> listAddresses(int uid) {
 
 ####  JPQL查询语言实验
 
-\* org.springframework.data.repository.Interface CrudRepository<T,ID>，基本的ORM框架通用的支持CRUD的接口
-
-\* org.springframework.data.jpa.repository.Interface JpaRepository<T,ID>，继承以上接口的具体JPA接口
-
-\* JpaRepository接口，封装了改变实体对象状态的JPA方法，简化了基于实体对象的CRUD操作(无需关心实体对象状态)
-
-\* 为每一个实体类创建继承了JpaRepository的接口
-
-\* Spring-data-jpa基于JDK动态代理，自动创建接口实现类完成操作，无需手动编写接口实现类(类似myBatis)
-
 
 
 JPQL
@@ -259,3 +251,63 @@ JPQL
   ![1553514697497](assets/1553514697497.png)
 
   
+
+  
+
+- org.springframework.data.jpa.repository.Query注解，声明JPQL查询语句
+- org.springframework.data.repository.query.Param注解，声明方法参数对应的JPQL语句参数
+
+
+![1553515743633](assets/1553515743633.png)
+
+
+
+
+
+```
+* org.springframework.data.repository.Interface CrudRepository<T,ID>，基本的ORM框架通用的支持CRUD的接口
+
+* org.springframework.data.jpa.repository.Interface JpaRepository<T,ID>，继承以上接口的具体JPA接口
+
+* JpaRepository接口，封装了改变实体对象状态的JPA方法，简化了基于实体对象的CRUD操作(无需关心实体对象状态)
+
+* 为每一个实体类创建继承了JpaRepository的接口
+
+* Spring-data-jpa基于JDK动态代理，自动创建接口实现类完成操作，无需手动编写接口实现类(类似myBatis)
+```
+
+JpaRepository接口中的常用方法(包含继承接口)
+
+- long count()
+- **void delete(T entity)**
+- void deleteAll()
+- void deleteAll(Iterable<S> entities)
+- void deleteById(ID id)
+- **List<T> findAll()**
+- **Optional<T> findById(ID id)**
+- **T save(T entity)**
+- List<S> saveAll(Iterable<S> entities)
+- void flush()
+- S saveAndFlush(S entity)
+- **不提供refresh()方法**
+
+
+
+创建操作指定实体类的**接口**，继承JpaRepository，重写泛型，**指定实体类，主键的类型**
+
+![1553515515061](assets/1553515515061.png)
+
+
+
++ Persist，持久化保存，save()方法
+
++ Update，更新，save()方法默认基于主键更新，与是否为脱管状态无关
+
+- 不提供refresh()基于对象的同步方法
+- 基于主键的查询，Optional<T> findById()，返回对象封装在optional容器
+
+
+
+Spring-data支持基于属性名称自动创建查询。即，仅按约定编写查询方法，无需编写JPQL语句
+
+![1553515807168](assets/1553515807168.png)
