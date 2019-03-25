@@ -281,12 +281,12 @@ JpaRepository接口中的常用方法(包含继承接口)
 - long count()
 - **void delete(T entity)**
 - void deleteAll()
-- void deleteAll(Iterable<S> entities)
+- `void deleteAll(Iterable<S> entities)`
 - void deleteById(ID id)
 - **List<T> findAll()**
 - **Optional<T> findById(ID id)**
 - **T save(T entity)**
-- List<S> saveAll(Iterable<S> entities)
+- `List<S> saveAll(Iterable<S> entities)`
 - void flush()
 - S saveAndFlush(S entity)
 - **不提供refresh()方法**
