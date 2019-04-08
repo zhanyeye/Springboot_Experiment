@@ -11,7 +11,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD})
 public @interface MyInterceptor {
-    AuthorityType[] value() default AuthorityType.USER;
+    AuthorityType[] value() default AuthorityType.USER;   //自定义类型的数组，默认值是USER
     public static enum AuthorityType {
         USER, ADMIN, SUPERADMIN;
     }
