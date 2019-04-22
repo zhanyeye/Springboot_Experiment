@@ -1,0 +1,23 @@
+POST http://localhost:8080/api/register
+Content-Type: application/json
+
+{
+  "userName": "zhanyeye",
+  "password": "12345"
+}
+
+###
+
+POST http://localhost:8080/api/login
+Content-Type: application/json
+
+{
+  "userName": "zhanyeye",
+  "password": "12345"
+}
+
+###
+GET http://localhost:8080/api/index
+Authorization: 52064a8264fc05793aa6c5f577f27ccd0fdd20a00255866974de12ec9de8539738754451ba213107339394e815d5119c
+
+###
